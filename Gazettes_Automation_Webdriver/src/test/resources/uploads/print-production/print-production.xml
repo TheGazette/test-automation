@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gazette-print-publication>
+  <title>THE {edition-title-case} GAZETTE</title>
+  <cover-price-uri>/print-publication/{edition-lower-case}/prices</cover-price-uri>
+  <issue-isbn override-issue-isbn="{override-issue-isbn}" prefix-counter-uri-isbn="/counter/issue-isbn/{edition-lower-case}/increment-and-get" required="true"/>
+  <issue-number required="true" override-issue-number="{override-issue-number}" prefix-counter-uri-issue="/counter/{edition-lower-case}-issue/increment-and-get"/>
+  <preview>fasle</preview>
+  <override-publication-date>{override-publication-date}</override-publication-date>
+  <!-- this folder should share(provide access) to the tomcat user who is 
+                                running print pdf service //macname/TSO/Gazettes/Electronic_services -->
+  <print-publication-delivery-folder>\\share\TheGazette\Documents</print-publication-delivery-folder>
+  <update-notice-metadata>true</update-notice-metadata>
+  <contact-details-uri>/print-publication/{edition-lower-case}/contact-document</contact-details-uri>
+  <terms-conditions-uri>/print-publication/{edition-lower-case}/terms-and-conditions</terms-conditions-uri>
+  <publish-edition>{edition-title-case}</publish-edition>
+  <!-- if not overridden then it will coming from ML, below is the search, 
+       Gazettes API Should search and get previous issue's last page number,
+       Query ML sort by print-publication-date desc, for documents in col: /gazette/page, 
+       and publication-year same as year of requested publication-date -->
+  <!--<page-number-sequence enable="true"> -->
+  <page-number-sequence enable="true" override-page-number="{override-page-number}">
+    <request>
+      <edition>{edition-title-case}</edition>
+      <pub-year-value>{pub-year-value}</pub-year-value>
+      <collections>
+        <collection>/gazette/page</collection>
+      </collections>
+      <workflow>retrieve-metadata-workflow</workflow>
+      <pagination>
+        <page-number>1</page-number>
+        <page-size>1</page-size>
+      </pagination>
+      <order-by>
+        <!-- Find out how to say descending order -->
+        <name>page-number-desc</name>
+      </order-by>
+      <get-metadata-elements>
+        <page-number/>
+      </get-metadata-elements>
+    </request>
+  </page-number-sequence>
+  <notice-search-request>
+    <request>
+      <edition>{edition-title-case}</edition>
+      <collections>
+        <collection>/edition/{edition-lower-case}</collection>
+        <collection>/gazette/notice</collection>
+      </collections>
+      <pub-date>
+        <start>{start-date-time}</start>
+        <end>{end-date-time}</end>
+      </pub-date>
+      <workflow>search-workflow</workflow>
+      <result-render-params>
+        <param>use-identity-transform</param>
+      </result-render-params>
+      <pagination>
+        <page-size>2000</page-size>
+      </pagination>
+    </request>
+  </notice-search-request>
+</gazette-print-publication>

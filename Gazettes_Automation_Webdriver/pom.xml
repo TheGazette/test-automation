@@ -1,0 +1,212 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>Gazettes</groupId>
+	<artifactId>test-automation</artifactId>
+	<version>1.0-SNAPSHOT</version>
+	<packaging>jar</packaging>
+
+	<name>test-automation</name>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<basePackage>cucumber.suite*, uk.co.tso.automation*, cucumber.suite.framework*</basePackage>
+		<automation.test.glue>cucumber.suite*</automation.test.glue>
+		<base.package>cucumber.suite*, uk.co.tso.automation*, cucumber.suite.framework*</base.package>
+	</properties>
+
+	<dependencies>
+		<!-- POI -->
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi</artifactId>
+			<version>3.13</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-ooxml</artifactId>
+			<version>3.13</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-ooxml-schemas</artifactId>
+			<version>3.13</version>
+		</dependency>
+		<dependency>
+			<groupId>dom4j</groupId>
+			<artifactId>dom4j</artifactId>
+			<version>1.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.xmlbeans</groupId>
+			<artifactId>xmlbeans</artifactId>
+			<version>2.3.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.xmlbeans</groupId>
+			<artifactId>xmlbeans</artifactId>
+			<version>2.3.0</version>
+		</dependency>
+		<!-- JavaMail -->
+		<dependency>
+			<groupId>javax.mail</groupId>
+			<artifactId>mail</artifactId>
+			<version>1.4</version>
+		</dependency>
+		
+		<!--cucumber-->
+		 <!--  <dependency>
+            <groupId>info.cukes</groupId>
+            <artifactId>cucumber-testng</artifactId>
+            <version>1.2.4</version>
+        </dependency> -->
+ 		<!--cucumber-->
+        <dependency>
+            <groupId>info.cukes</groupId>
+            <artifactId>cucumber-java</artifactId>
+            <version>1.2.4</version>
+            <scope>test</scope>
+        </dependency>
+        
+        <dependency>
+			<groupId>info.cukes</groupId>
+			<artifactId>cucumber-junit</artifactId>
+			<version>1.2.4</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.12</version>
+			<scope>test</scope>
+		</dependency>
+ 		<!--hamcrest-->
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-all</artifactId>
+            <version>1.3</version>
+        </dependency>
+        <!--  guava -->
+		<dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>22.0</version>
+        </dependency>
+        <dependency>
+   			 <groupId>com.fasterxml.jackson.dataformat</groupId>
+    		<artifactId>jackson-dataformat-xml</artifactId>
+    		<version>2.9.1</version>
+		</dependency>
+		<dependency>
+			<groupId>uk.co.tso.automation</groupId>
+			<artifactId>automation-core</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time</artifactId>
+			<version>2.9.9</version>
+		</dependency>
+
+	</dependencies>
+
+	<profiles>
+		<profile>
+			<id>testing</id>
+			<activation>
+				<property>
+					<name>env</name>
+					<value>testing</value>
+				</property>
+			</activation>
+			<properties>
+				<testSiteName>https://environment.thegazette.co.uk/</testSiteName>
+				<testSiteNameForIE>https://environment.thegazette.co.uk/</testSiteNameForIE>
+			</properties>
+		</profile>
+
+		<profile>
+			<id>staging</id>
+			<activation>
+				<property>
+					<name>env</name>
+					<value>staging</value>
+				</property>
+			</activation>
+			<properties>
+				<testSiteName>https://environment.thegazette.co.uk/</testSiteName>
+				<testSiteNameForIE>https://environment.thegazette.co.uk/</testSiteNameForIE>
+			</properties>
+		</profile>
+
+		<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.22</version>
+				<configuration>
+					<reuseForks>true</reuseForks>
+					<includes>
+						<include>**/*IT.class</include>
+					</includes>
+					<argLine>-DbasePackage="${base.package}" -Denvironment=${env}</argLine>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>com.github.temyers</groupId>
+				<artifactId>cucumber-jvm-parallel-plugin</artifactId>
+				<version>2.0.1</version>
+				<executions>
+					<execution>
+						<id>generateRunners</id>
+						<phase>validate</phase>
+						<goals>
+							<goal>generateRunners</goal>
+						</goals>
+						<configuration>
+							<glue>cucumber.suite.glue, uk.co.tso.automation, uk.co.tso.automation.service</glue>
+							<featuresDirectory>src/test/resources/features</featuresDirectory>
+							<cucumberOutputDir>target/cucumber-parallel</cucumberOutputDir>
+							<format>json,html</format>
+							<tags>"~@ignored"</tags>
+							<useTestNG>false</useTestNG>
+							<namingScheme>feature-title</namingScheme>
+					</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+
+	</build>
+
+<!--	<reporting>
+		 <plugins>
+			TestNG-xslt related configuration. 
+			<plugin>
+				<groupId>org.reportyng</groupId>
+				<artifactId>reporty-ng</artifactId>
+				<version>1.2</version>
+				<configuration>
+					Output directory for the testng xslt report 
+					<outputdir>/target/testng-xslt-report</outputdir>
+					<sorttestcaselinks>true</sorttestcaselinks>
+					<testdetailsfilter>FAIL,SKIP,PASS,CONF,BY_CLASS</testdetailsfilter>
+					<showruntimetotals>true</showruntimetotals>
+				</configuration>
+			</plugin>
+		</plugins> 
+	</reporting>-->
+
+	<!-- <pluginRepositories>
+		<pluginRepository>
+			<id>reporty-ng</id>
+			<url>https://github.com/cosminaru/reporty-ng/raw/master/dist/maven</url>
+		</pluginRepository>
+	</pluginRepositories> -->
+</project>
